@@ -112,8 +112,6 @@ public class Home extends JFrame implements ActionListener
        	background = new JLabel("",img,JLabel.CENTER);
         background.setBounds(0,0,1200,850);
         add(background);
-        
-		
 		
 	}
 

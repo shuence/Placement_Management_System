@@ -43,11 +43,6 @@ their USN, or set of records by each branch, or by the company name.
 
 ---
 
-Go through Gautham_PMS_report.pdf to understand more
-It has complete information regarding the project and its Implementation
-
----
-
 # SCHEMA DIAGRAM
 
 ![diag](https://user-images.githubusercontent.com/85282195/181412024-2d45244f-4079-470b-bfc9-c0663e0c5a48.PNG)

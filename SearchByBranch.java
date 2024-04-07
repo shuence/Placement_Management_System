@@ -11,13 +11,12 @@ public class SearchByBranch extends JFrame implements ActionListener
 {
     
     private JLabel branchL;
-    private JComboBox branchT; 
+    private JComboBox<String> branchT; 
     private JTextArea output;
     private JButton search,back;
     
     Container con=null;
-    String usn="";
-    String[] branches= {"CSE","ISE","EEE","ECE","MEC","TEC","AIML"};
+    String[] branches= {"CSE","IT","EEE","ECE","MEC","AIML"};
     
     SearchByBranch()
     {
@@ -33,18 +32,18 @@ public class SearchByBranch extends JFrame implements ActionListener
 
         Font font = new Font("Verdana", Font.BOLD, 16);
         Color blue = new Color(30,144,255);
-        branchL=new JLabel("Enter Branch of record to be searched");
+        branchL=new JLabel("Select Branch to search for records:");
         branchL.setBounds(300, 50, 700,150);
         branchL.setFont(font);
         branchL.setForeground(Color.BLACK);
         
-        branchT=new JComboBox(branches);
+        branchT=new JComboBox<>(branches);
 		branchT.setBounds(725,100,250,50);
         branchT.setFont(font);
         branchT.setForeground(Color.BLACK);
 
         output=new JTextArea();
-        output.setBounds(20,200,1200,350);
+        output.setBounds(20,200,1300,350);
         output.setFont(font);
         output.setForeground(Color.BLACK);
         output.setEditable(false);
@@ -78,47 +77,10 @@ public class SearchByBranch extends JFrame implements ActionListener
     {
         if(ae.getSource()==search)
         {
-            String branch1 = (String) branchT.getSelectedItem();
+            String branch = (String) branchT.getSelectedItem();
 			try
             {
-				String name = "", usn ="", sem = "", branch = "", cgpa= "", nob="", company="",ctc="",comments="", r;
-
-                File temp = new File("temp.txt");
-				Boolean createNewFile1 = temp.createNewFile();
-                BufferedWriter pw = new BufferedWriter(new FileWriter("temp.txt"));
-                String b = "NAME\t|USN\t|SEM\t|BRANCH\t|CGPA\t|NOB\t|COMPANY\t|CTC\t|COMMENTS";
-                pw.write(b); 
-                pw.write("\n");
-
-                BufferedReader br = new BufferedReader(new FileReader("student.txt"));
-                while((r= br.readLine()) !=null)
-		        {
-		        	String[] result = r.split("\\|");
-		        	name=result[0];
-		        	usn=result[1];
-		        	sem= result[2];
-		        	branch=result[3];
-		        	cgpa=result[4];
-		        	nob=result[5];
-                    company=result[6];
-                    ctc=result[7];
-                    comments=result[8];
-                    if(name.equals("999"))
-                        break;
-                    if(branch.equals(branch1)) {
-                    String bb = name  + "\t|" + usn + "\t|" + sem + "\t|" + branch + "\t|" + cgpa + "\t|" + nob + "\t|" + company + "\t|" + ctc + "\t|" + comments;
-                    pw.write(bb);
-                    pw.write("\n");
-                    }
-		        }
-                br.close();
-                pw.close();
-                File file = new File("temp.txt");
-                BufferedReader br1 = new BufferedReader(new FileReader(file));
-                output.read(br1,null);
-                br1.close(); 
-                output.requestFocus();
-                file.delete();
+                searchRecordInCSV("student.csv", branch);
             }
             catch(Exception e)
             {
@@ -142,11 +104,37 @@ public class SearchByBranch extends JFrame implements ActionListener
         }
     }
 
+    private void searchRecordInCSV(String filename, String branch) throws IOException {
+        StringBuilder recordText = new StringBuilder();
+        boolean recordFound = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4 && parts[3].equalsIgnoreCase(branch)) {
+                    recordText.append("Student By Branch Records:\n");
+                    recordText.append("NAME\t|USN\t|SEM\t|BRANCH\t|CGPA\t|NOB\t|COMPANY\t|CTC\t|COMMENTS\n");
+                    recordText.append(
+                            "--------------------------------------------------------------------------------------------------------------------------------\n");
+                    recordText.append(line.replace(",", "\t"));
+                    recordText.append("\n");
+                    recordFound = true;
+                }
+            }
+        }
+
+        if (!recordFound) {
+            showMessageDialog(null, "No records found for the selected branch.");
+        }
+
+        output.setText(recordText.toString());
+    }
+
     public static void main(String args[])
     {
-        Search1 ser=new Search1();
+        SearchByBranch ser=new SearchByBranch();
 		ser.setSize(2300,790);
 		ser.setVisible(true);
     }
 }
-
